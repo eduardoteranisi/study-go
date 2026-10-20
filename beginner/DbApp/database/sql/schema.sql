@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS books (
     isbn TEXT NOT NULL,
     title TEXT NOT NULL,
     subtitle TEXT,
-    authors TEXT,
     publisher TEXT,
     year INT,
     format TEXT,
@@ -15,8 +14,19 @@ CREATE TABLE IF NOT EXISTS subjects (
     name TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS authors (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS books_subjects (
     book_id   INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
     subject_id INTEGER NOT NULL REFERENCES subjects(id),
-    PRIMARY KEY (livro_id, assunto_id)
+    PRIMARY KEY (book_id, subject_id)
+);
+
+CREATE TABLE IF NOT EXISTS books_authors (
+    book_id   INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+    author_id INTEGER NOT NULL REFERENCES author(id),
+    PRIMARY KEY (book_id, author_id)
 );

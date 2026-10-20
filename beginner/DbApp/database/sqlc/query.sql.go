@@ -3,7 +3,7 @@
 //   sqlc v1.31.1
 // source: query.sql
 
-package database
+package sqlc
 
 import (
 	"context"
@@ -11,16 +11,15 @@ import (
 )
 
 const createBook = `-- name: CreateBook :one
-INSERT INTO books (isbn, title, subtitle, authors, publisher, year, format, page_count) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-RETURNING id, isbn, title, subtitle, authors, publisher, year, format, page_count
+INSERT INTO books (isbn, title, subtitle, publisher, year, format, page_count) 
+VALUES (?, ?, ?, ?, ?, ?, ?)
+RETURNING id, isbn, title, subtitle, publisher, year, format, page_count
 `
 
 type CreateBookParams struct {
 	Isbn      string
 	Title     string
 	Subtitle  sql.NullString
-	Authors   sql.NullString
 	Publisher sql.NullString
 	Year      sql.NullInt64
 	Format    sql.NullString
@@ -32,7 +31,6 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 		arg.Isbn,
 		arg.Title,
 		arg.Subtitle,
-		arg.Authors,
 		arg.Publisher,
 		arg.Year,
 		arg.Format,
@@ -44,7 +42,6 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 		&i.Isbn,
 		&i.Title,
 		&i.Subtitle,
-		&i.Authors,
 		&i.Publisher,
 		&i.Year,
 		&i.Format,

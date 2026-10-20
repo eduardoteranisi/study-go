@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-//go:embed schema.sql
+//go:embed sql/schema.sql
 var schema string
 
 func Migrate(db *sql.DB) error {

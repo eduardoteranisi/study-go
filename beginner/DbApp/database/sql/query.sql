@@ -1,6 +1,6 @@
 -- name: CreateBook :one
-INSERT INTO books (isbn, title, subtitle, authors, publisher, year, format, page_count) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+INSERT INTO books (isbn, title, subtitle, publisher, year, format, page_count) 
+VALUES (?, ?, ?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: CreateSubject :one

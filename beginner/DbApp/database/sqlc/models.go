@@ -2,22 +2,31 @@
 // versions:
 //   sqlc v1.31.1
 
-package database
+package sqlc
 
 import (
 	"database/sql"
 )
+
+type Author struct {
+	ID   int64
+	Name string
+}
 
 type Book struct {
 	ID        int64
 	Isbn      string
 	Title     string
 	Subtitle  sql.NullString
-	Authors   sql.NullString
 	Publisher sql.NullString
 	Year      sql.NullInt64
 	Format    sql.NullString
 	PageCount sql.NullInt64
+}
+
+type BooksAuthor struct {
+	BookID   int64
+	AuthorID int64
 }
 
 type BooksSubject struct {
