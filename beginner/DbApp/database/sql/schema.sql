@@ -27,6 +27,6 @@ CREATE TABLE IF NOT EXISTS books_subjects (
 
 CREATE TABLE IF NOT EXISTS books_authors (
     book_id   INTEGER NOT NULL REFERENCES books(id) ON DELETE CASCADE,
-    author_id INTEGER NOT NULL REFERENCES author(id),
+    author_id INTEGER NOT NULL REFERENCES authors(id),
     PRIMARY KEY (book_id, author_id)
 );

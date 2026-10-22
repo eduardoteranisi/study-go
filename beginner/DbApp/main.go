@@ -18,7 +18,7 @@ import (
 )
 
 const baseURL = "https://brasilapi.com.br/api/isbn/v1/"
-const dbPath = "./database/app.db"
+const dbPath = "file:./database/app.db?_foreign_keys=on"
 
 type Book struct {
 	Isbn      string   `json:"isbn"`
@@ -90,12 +90,21 @@ func main() {
 		Format:    nullStringHelper(bookData.Format),
 		PageCount: nullInt64Helper(bookData.PageCount),
 	})
-
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("Book added to db: %T", createdBook)
+	err = database.CreateSubjects(ctx, db, bookData.Subjects, createdBook.ID)
+	if err != nil {
+		panic(err)
+	}
+
+	err = database.CreateAuthors(ctx, db, bookData.Authors, createdBook.ID)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Book added to db: %s", createdBook.Title)
 }
 
 func nullStringHelper(s string) sql.NullString {

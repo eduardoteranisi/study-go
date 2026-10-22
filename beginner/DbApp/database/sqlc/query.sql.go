@@ -10,6 +10,19 @@ import (
 	"database/sql"
 )
 
+const createAuthor = `-- name: CreateAuthor :one
+INSERT INTO authors (name)
+VALUES (?)
+RETURNING id, name
+`
+
+func (q *Queries) CreateAuthor(ctx context.Context, name string) (Author, error) {
+	row := q.db.QueryRowContext(ctx, createAuthor, name)
+	var i Author
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
+}
+
 const createBook = `-- name: CreateBook :one
 INSERT INTO books (isbn, title, subtitle, publisher, year, format, page_count) 
 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -48,6 +61,21 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 		&i.PageCount,
 	)
 	return i, err
+}
+
+const createBookAuthorRelation = `-- name: CreateBookAuthorRelation :exec
+INSERT INTO books_authors (book_id, author_id)
+VALUES (?, ?)
+`
+
+type CreateBookAuthorRelationParams struct {
+	BookID   int64
+	AuthorID int64
+}
+
+func (q *Queries) CreateBookAuthorRelation(ctx context.Context, arg CreateBookAuthorRelationParams) error {
+	_, err := q.db.ExecContext(ctx, createBookAuthorRelation, arg.BookID, arg.AuthorID)
+	return err
 }
 
 const createBookSubjectRelation = `-- name: CreateBookSubjectRelation :exec
