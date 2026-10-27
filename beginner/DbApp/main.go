@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"database/sql"
-	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,9 +14,12 @@ import (
 
 	"github.com/eduardoteranisi/study-go/beginner/DbApp/database"
 	"github.com/eduardoteranisi/study-go/beginner/DbApp/database/sqlc"
+	"github.com/eduardoteranisi/study-go/beginner/DbApp/services"
 )
 
 const baseURL = "https://brasilapi.com.br/api/isbn/v1/"
+const paramsURL = "?providers="
+const providers = "open-library"
 const dbPath = "file:./database/app.db?_foreign_keys=on"
 
 type Book struct {
@@ -29,11 +31,6 @@ type Book struct {
 	Year      int      `json:"year"`
 	Format    string   `json:"format"`
 	PageCount int      `json:"page_count"`
-	Subjects  []string `json:"subjects"`
-}
-
-type SqlField interface {
-	Value() (driver.Value, error)
 }
 
 func main() {
@@ -49,7 +46,7 @@ func main() {
 	}
 	isbn = strings.TrimSpace(isbn)
 
-	endpoint := baseURL + url.PathEscape(isbn)
+	endpoint := baseURL + url.PathEscape(isbn) + paramsURL + providers
 
 	resp, err := http.Get(endpoint)
 	if err != nil {
@@ -94,15 +91,8 @@ func main() {
 		panic(err)
 	}
 
-	err = database.CreateSubjects(ctx, db, bookData.Subjects, createdBook.ID)
-	if err != nil {
-		panic(err)
-	}
-
-	err = database.CreateAuthors(ctx, db, bookData.Authors, createdBook.ID)
-	if err != nil {
-		panic(err)
-	}
+	services.ReadSubjectFromUserService(ctx, db, createdBook.ID)
+	services.CreateAuthorsService(ctx, db, bookData.Authors, createdBook.ID)
 
 	fmt.Printf("Book added to db: %s", createdBook.Title)
 }

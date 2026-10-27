@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"strings"
 
 	"github.com/eduardoteranisi/study-go/beginner/DbApp/database/sqlc"
 )
@@ -22,7 +23,7 @@ func CreateSubjects(ctx context.Context, db *sql.DB, params []string, book_id in
 	queries := sqlc.New(db)
 
 	for _, param := range params {
-		subject, err := queries.CreateSubject(ctx, param)
+		subject, err := queries.CreateSubject(ctx, strings.TrimSpace(param))
 		if err != nil {
 			return err
 		}
@@ -80,4 +81,37 @@ func CreateBookAuthorRelation(ctx context.Context, db *sql.DB, params sqlc.Creat
 	}
 
 	return nil
+}
+
+func GetBookByAuthor(ctx context.Context, db *sql.DB, param string) (*sqlc.GetBookByAuthorRow, error) {
+	queries := sqlc.New(db)
+
+	book, err := queries.GetBookByAuthor(ctx, param)
+	if err != nil {
+		return nil, err
+	}
+
+	return &book, nil
+}
+
+func GetBookByIsbn(ctx context.Context, db *sql.DB, param string) (*sqlc.Book, error) {
+	queries := sqlc.New(db)
+
+	book, err := queries.GetBookByIsbn(ctx, param)
+	if err != nil {
+		return nil, err
+	}
+
+	return &book, nil
+}
+
+func GetBookByTitle(ctx context.Context, db *sql.DB, param string) (*sqlc.Book, error) {
+	queries := sqlc.New(db)
+
+	book, err := queries.GetBookByTitle(ctx, param)
+	if err != nil {
+		return nil, err
+	}
+
+	return &book, nil
 }

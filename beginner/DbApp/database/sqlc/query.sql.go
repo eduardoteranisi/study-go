@@ -105,3 +105,84 @@ func (q *Queries) CreateSubject(ctx context.Context, name string) (Subject, erro
 	err := row.Scan(&i.ID, &i.Name)
 	return i, err
 }
+
+const getBookByAuthor = `-- name: GetBookByAuthor :one
+SELECT b.id, b.isbn, b.title, b.subtitle, b.publisher, b.year, b.format, b.page_count, a.name
+FROM books b
+LEFT JOIN books_authors ba ON b.id = ba.book_id
+LEFT JOIN authors a ON ba.author_id = a.id
+WHERE a.name = (?)
+`
+
+type GetBookByAuthorRow struct {
+	ID        int64
+	Isbn      string
+	Title     string
+	Subtitle  sql.NullString
+	Publisher sql.NullString
+	Year      sql.NullInt64
+	Format    sql.NullString
+	PageCount sql.NullInt64
+	Name      sql.NullString
+}
+
+func (q *Queries) GetBookByAuthor(ctx context.Context, name string) (GetBookByAuthorRow, error) {
+	row := q.db.QueryRowContext(ctx, getBookByAuthor, name)
+	var i GetBookByAuthorRow
+	err := row.Scan(
+		&i.ID,
+		&i.Isbn,
+		&i.Title,
+		&i.Subtitle,
+		&i.Publisher,
+		&i.Year,
+		&i.Format,
+		&i.PageCount,
+		&i.Name,
+	)
+	return i, err
+}
+
+const getBookByIsbn = `-- name: GetBookByIsbn :one
+SELECT id, isbn, title, subtitle, publisher, year, format, page_count
+FROM books b
+WHERE b.isbn = (?)
+`
+
+func (q *Queries) GetBookByIsbn(ctx context.Context, isbn string) (Book, error) {
+	row := q.db.QueryRowContext(ctx, getBookByIsbn, isbn)
+	var i Book
+	err := row.Scan(
+		&i.ID,
+		&i.Isbn,
+		&i.Title,
+		&i.Subtitle,
+		&i.Publisher,
+		&i.Year,
+		&i.Format,
+		&i.PageCount,
+	)
+	return i, err
+}
+
+const getBookByTitle = `-- name: GetBookByTitle :one
+SELECT id, isbn, title, subtitle, publisher, year, format, page_count
+FROM books b
+WHERE b.title = (?)
+`
+
+func (q *Queries) GetBookByTitle(ctx context.Context, title string) (Book, error) {
+	row := q.db.QueryRowContext(ctx, getBookByTitle, title)
+	var i Book
+	err := row.Scan(
+		&i.ID,
+		&i.Isbn,
+		&i.Title,
+		&i.Subtitle,
+		&i.Publisher,
+		&i.Year,
+		&i.Format,
+		&i.PageCount,
+	)
+	return i, err
+}
